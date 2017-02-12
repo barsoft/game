@@ -17,7 +17,7 @@ class Texture:
 
         glBindTexture(GL_TEXTURE_2D, self.textureId)
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, self.imgData)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, self.imgData)
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
@@ -28,4 +28,4 @@ class Texture:
     def bind(self):
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.textureId)
-        glUniform1i(self.textureId, 0);
+        #glUniform1i(self.textureId, 0);

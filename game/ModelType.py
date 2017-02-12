@@ -6,15 +6,15 @@ from OpenGL.arrays import vbo
 
 
 class ModelType:
-    vertexList = []
-    uvList = []
-    normalList = []
-    indexList = []
-    vertexPositions = None
-    uvPositions = None
-    indexPositions = None
-
     def __init__(self, path):
+        self.vertexList = []
+        self.uvList = []
+        self.normalList = []
+        self.indexList = []
+        self.vertexPositions = None
+        self.uvPositions = None
+        self.indexPositions = None
+
         self.readObj(path)
         self.load()
 
@@ -38,9 +38,9 @@ class ModelType:
             elif split[0] == "f":
                 for i in range(0, 3):
                     vertex = split[i + 1].split('/')
-                    self.vertexList.append(initVertexList[int(vertex[0]) - 1])
-                    self.uvList.append(initUvList[int(vertex[1]) - 1])
-                    self.normalList.append(initNormalList[int(vertex[2]) - 1])
+                    self.vertexList += (initVertexList[int(vertex[0]) - 1])
+                    self.uvList += (initUvList[int(vertex[1]) - 1])
+                    self.normalList += (initNormalList[int(vertex[2]) - 1])
                     self.indexList.append(len(self.indexList))
 
         objFile.close()
@@ -50,10 +50,7 @@ class ModelType:
         self.uvPositions = vbo.VBO(numpy.array(self.uvList, dtype=numpy.float32))
         self.indexPositions = vbo.VBO(numpy.array(self.indexList, dtype=numpy.int32), target=GL_ELEMENT_ARRAY_BUFFER)
 
-    def bind(self):
-        self.indexPositions.bind()
-        self.vertexPositions.bind()
-
     def destroy(self):
         self.vertexPositions.delete()
+        self.uvPositions.delete()
         self.indexPositions.delete()
