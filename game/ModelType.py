@@ -13,6 +13,7 @@ class ModelType:
         self.indexList = []
         self.vertexPositions = None
         self.uvPositions = None
+        self.normalPositions = None
         self.indexPositions = None
 
         self.readObj(path)
@@ -48,9 +49,11 @@ class ModelType:
     def load(self):
         self.vertexPositions = vbo.VBO(numpy.array(self.vertexList, dtype=numpy.float32))
         self.uvPositions = vbo.VBO(numpy.array(self.uvList, dtype=numpy.float32))
+        self.normalPositions = vbo.VBO(numpy.array(self.normalList, dtype=numpy.float32))
         self.indexPositions = vbo.VBO(numpy.array(self.indexList, dtype=numpy.int32), target=GL_ELEMENT_ARRAY_BUFFER)
 
     def destroy(self):
         self.vertexPositions.delete()
         self.uvPositions.delete()
+        self.normalPositions.delete()
         self.indexPositions.delete()

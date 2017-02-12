@@ -11,38 +11,49 @@ import game.Camera
 from OpenGL.GL import *
 from OpenGL.GLE import *
 from OpenGL.GLUT import *
-from OpenGL.GL import shaders
 from OpenGL.raw.GLU import gluPerspective
 from game.ModelType import *
 from game.Model import *
 from game.Texture import *
 from game.Math import *
+import platform
+import game.Shaders
+import numpy as np
+import game.Controls
 
 cube = None
 snowman = None
+grass = None
+grasses = []
 
-shaderProgram = None
 windowWidth = 500
 windowHeight = 500
 
-mousex = 0
-mousey = 0
-startx = 0
-starty = 0
+lightID = None
+
+
+def JoinStyle(msg):
+    sys.exit(0)
 
 
 def main():
-    global shaderProgram
-    global cube, snowman
+    global cube, snowman, grass, grasses
+    global lightID
     # initialize glut
     glutInit(sys.argv)
-    glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+    print(platform.system())
+
+    if (platform.system() == 'Mac'):
+        glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+    else:
+        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+
     glutInitWindowSize(windowWidth, windowHeight)
     glutCreateWindow(b"basic demo")
     glutDisplayFunc(draw)
     glutReshapeFunc(reshape)
-    glutMouseFunc(mouse)
-    glutMotionFunc(motion)
+    glutMouseFunc(game.Controls.mouseClick)
+    glutMotionFunc(game.Controls.mouseMotion)
 
     game.Camera.projectionMatrix = perspective(45.0, float(windowWidth) / float(windowHeight), 0.1, 100.0)
 
@@ -55,54 +66,41 @@ def main():
     VAO = glGenVertexArrays(1)
     glBindVertexArray(VAO)
 
-    loadShaders()
+    game.Shaders.loadShaders()
 
-    modelType = ModelType('cube.obj')
-    texture = Texture('cube.jpg')
-    cube = Model(modelType, texture, shaderProgram)
+    type = ModelType('assets/cube.obj')
+    texture = Texture('assets/cube.jpg')
+    cube = Model(type, texture, game.Shaders.shaderProgram)
 
-    snowman = ModelType('snowman.obj')
-    texture = Texture('snowman.bmp')
-    snowman = Model(snowman, texture, shaderProgram)
+    type = ModelType('assets/snowman.obj')
+    texture = Texture('assets/snowman.bmp')
+    snowman = Model(type, texture, game.Shaders.shaderProgram)
+
+    type = ModelType('assets/grass.obj')
+    texture = Texture('assets/grass.jpg')
+
+    for i in range(-5, 6):
+        for j in range(-5, 6):
+            g = Model(type, texture, game.Shaders.shaderProgram)
+            g.x = i
+            g.z = j
+            grasses.append(g)
 
     glutMainLoop()
 
 
-def loadShaders():
-    global shaderProgram
-    vertexShader = shaders.compileShader("""
-    #version 330 core
-    layout(location = 0) in vec3 vertexPosition_modelspace;
-    layout(location = 1) in vec2 vertexUV;
-    out vec2 UV;
-    uniform mat4 Projection;
-    uniform mat4 View;
-    uniform mat4 Model;
-    void main(){
-        gl_Position = Projection * View * Model * vec4(vertexPosition_modelspace,1);
-        UV = vertexUV;
-    }
-    """, GL_VERTEX_SHADER)
-
-    fragmentShader = shaders.compileShader("""
-    #version 330 core
-    in vec2 UV;
-    out vec3 color;
-    uniform sampler2D myTextureSampler;
-    void main(){
-        color = texture( myTextureSampler, UV ).rgb;
-    }
-    """, GL_FRAGMENT_SHADER)
-    shaderProgram = shaders.compileProgram(vertexShader, fragmentShader)
-
-
 # draw the polycone shape
 def draw():
-    global shaderProgram
+    global cube, snowman, grasses
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-    # cube.draw(mousex)
-    snowman.draw(mousex)
+    game.Camera.viewMatrix = lookat(game.Camera.eye, game.Camera.target, game.Camera.up)
+    game.Camera.viewMatrix = game.Camera.viewMatrix * rotate(game.Controls.mousex, np.array([0, 1, 0]))
+
+    for g in grasses:
+        g.draw()
+    cube.draw()
+    snowman.draw()
 
     glutSwapBuffers()
     glutPostRedisplay()
@@ -110,23 +108,11 @@ def draw():
 
 def reshape(width, height):
     global windowWidth, windowHeight
+
     windowWidth = width
     windowHeight = height
     glViewport(0, 0, windowWidth, windowHeight)
     game.Camera.projectionMatrix = perspective(45.0, float(windowWidth) / float(windowHeight), 0.1, 100.0)
-
-
-def motion(x, y):
-    global mousex, mousey, startx, starty
-    mousex = x - startx
-    mousey = y - starty
-
-
-def mouse(button, state, x, y):
-    global startx, starty
-    if (state == GLUT_DOWN):
-        startx = x
-        starty = y
 
 
 main()
