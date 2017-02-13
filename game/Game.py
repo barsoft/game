@@ -74,12 +74,17 @@ def main():
     type = ModelType('assets/grass.obj')
     texture = Texture('assets/grass.jpg')
 
-    for i in range(-5, 6):
-        for j in range(-5, 6):
+    size = 5
+    for i in range(-size, size + 1):
+        for j in range(-size, size + 1):
             g = Model(type, texture, game.Shaders.shaderProgram)
             g.x = i * 2
             g.z = j * 2
             grasses.append(g)
+
+    snowman.y += 1
+    game.Camera.cameraRotY = -90
+    game.Camera.cameraRotX = -30
 
     glutMainLoop()
 
@@ -90,8 +95,8 @@ def draw():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     game.Camera.viewMatrix = lookat(game.Camera.eye, game.Camera.target, game.Camera.up)
-    game.Camera.viewMatrix = game.Camera.viewMatrix * rotate(game.Controls.cameraX, np.array([1, 0, 0]))
-    game.Camera.viewMatrix = game.Camera.viewMatrix * rotate(game.Controls.cameraY, np.array([0, 1, 0]))
+    game.Camera.viewMatrix = game.Camera.viewMatrix * rotate(game.Camera.cameraRotX, np.array([1, 0, 0]))
+    game.Camera.viewMatrix = game.Camera.viewMatrix * rotate(game.Camera.cameraRotY, np.array([0, 1, 0]))
 
     for g in grasses:
         g.draw()
