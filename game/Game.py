@@ -23,7 +23,6 @@ import game.Controls
 
 cube = None
 snowman = None
-grass = None
 grasses = []
 
 windowWidth = 500
@@ -68,10 +67,6 @@ def main():
 
     game.Shaders.loadShaders()
 
-    type = ModelType('assets/cube.obj')
-    texture = Texture('assets/cube.jpg')
-    cube = Model(type, texture, game.Shaders.shaderProgram)
-
     type = ModelType('assets/snowman.obj')
     texture = Texture('assets/snowman.bmp')
     snowman = Model(type, texture, game.Shaders.shaderProgram)
@@ -100,7 +95,6 @@ def draw():
 
     for g in grasses:
         g.draw()
-    cube.draw()
     snowman.draw()
 
     glutSwapBuffers()
