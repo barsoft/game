@@ -1,19 +1,24 @@
 from OpenGL.GLUT import *
 
-mousex = 0
-mousey = 0
-startx = 0
-starty = 0
+startX = 0
+startY = 0
+cameraX = 0
+cameraY = 0
+cameraLastX = 0
+cameraLastY = 0
 
 
 def mouseMotion(x, y):
-    global mousex, mousey, startx, starty
-    mousex = x - startx
-    mousey = y - starty
+    global startX, startY, cameraY, cameraX, cameraLastX, cameraLastY
+    cameraX = cameraLastX + y - startY
+    cameraY = cameraLastY + x - startX
 
 
 def mouseClick(button, state, x, y):
-    global startx, starty
+    global startX, startY, cameraY, cameraX, cameraLastX, cameraLastY
     if (state == GLUT_DOWN):
-        startx = x
-        starty = y
+        startX = x
+        startY = y
+    if (state == GLUT_UP):
+        cameraLastX = cameraX
+        cameraLastY = cameraY

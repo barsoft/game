@@ -43,7 +43,7 @@ def main():
     glutInit(sys.argv)
     print(platform.system())
 
-    if (platform.system() == 'Mac'):
+    if (platform.system() == 'Darwin'):
         glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
     else:
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
@@ -82,8 +82,8 @@ def main():
     for i in range(-5, 6):
         for j in range(-5, 6):
             g = Model(type, texture, game.Shaders.shaderProgram)
-            g.x = i
-            g.z = j
+            g.x = i * 2
+            g.z = j * 2
             grasses.append(g)
 
     glutMainLoop()
@@ -95,7 +95,8 @@ def draw():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     game.Camera.viewMatrix = lookat(game.Camera.eye, game.Camera.target, game.Camera.up)
-    game.Camera.viewMatrix = game.Camera.viewMatrix * rotate(game.Controls.mousex, np.array([0, 1, 0]))
+    game.Camera.viewMatrix = game.Camera.viewMatrix * rotate(game.Controls.cameraX, np.array([1, 0, 0]))
+    game.Camera.viewMatrix = game.Camera.viewMatrix * rotate(game.Controls.cameraY, np.array([0, 1, 0]))
 
     for g in grasses:
         g.draw()
